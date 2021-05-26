@@ -16,14 +16,14 @@ class MyDataset(data.Dataset):
         self.num_src = num_src
         self.read = read
         self.transforms = transforms
-        self.pair = load_pair(os.path.join(self.root, f'pair.txt'))
+        self.pair, self.ref_idxs = load_pair(os.path.join(self.root, f'pair.txt'))
 
     def __len__(self):
         return len(self.pair)
 
     def __getitem__(self, i):
-        ref_idx = i
-        src_idxs = self.pair[ref_idx][:self.num_src]
+        ref_idx = self.ref_idxs[i]
+        src_idxs = self.pair[i][:self.num_src]
 
         ref, *srcs = [os.path.join(self.root, f'images/{idx:08}.jpg') for idx in [ref_idx] + src_idxs]
         ref_cam, *srcs_cam = [os.path.join(self.root, f'cams/{idx:08}_cam.txt') for idx in [ref_idx] + src_idxs]

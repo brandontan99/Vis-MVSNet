@@ -13,15 +13,17 @@ def load_pair(file: str):
     with open(file) as f:
         lines = f.readlines()
     n_cam = int(lines[0])
+    ref_idxs = []
     pairs = []
     for i in range(1, 1+2*n_cam, 2):
         pair = []
+        ref_idxs.append(int(lines[i])) # to store the ref image indices
         pair_str = lines[i+1].strip().split(' ')
         n_pair = int(pair_str[0])
         for j in range(1, 1+2*n_pair, 2):
             pair.append(int(pair_str[j]))
         pairs.append(pair)
-    return pairs
+    return pairs, ref_idxs
 
 
 def load_cam(file: str, max_d, interval_scale=1):
