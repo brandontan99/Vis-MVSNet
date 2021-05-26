@@ -84,7 +84,7 @@ if __name__ == '__main__':
 
     pbar = tqdm.tqdm(loader, dynamic_ncols=True, total=len(loader))
     # pbar = itertools.product(range(num_scan), range(num_ref), range(num_view))
-    for i, sample in pbar:
+    for (i, sample) in pbar:
         if sample.get('skip') is not None and np.any(sample['skip']): raise ValueError()
 
         ref, ref_cam, srcs, srcs_cam, gt, masks = [sample[attr] for attr in ['ref', 'ref_cam', 'srcs', 'srcs_cam', 'gt', 'masks']]
