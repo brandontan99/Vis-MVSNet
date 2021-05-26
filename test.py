@@ -82,7 +82,7 @@ if __name__ == '__main__':
     print(f'load {os.path.join(args.load_path, str(args.load_step))}')
     model.eval()
 
-    pbar = tqdm.tqdm(enumerate(loader), dynamic_ncols=True, total=len(loader))
+    pbar = tqdm.tqdm(loader, dynamic_ncols=True, total=len(loader))
     # pbar = itertools.product(range(num_scan), range(num_ref), range(num_view))
     for i, sample in pbar:
         if sample.get('skip') is not None and np.any(sample['skip']): raise ValueError()
