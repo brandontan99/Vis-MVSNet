@@ -66,7 +66,11 @@ def numpy_collate(data_):
 
 
 def dict_collate(data_):
-    # data_ is a list of tuple (ref_idx, sample)
-    ref_idxs = data_[0][0] # assume that there is the batch size is always 1
-    samples = [sample for _, sample in data_]
-    return ref_idxs, {k: np.stack([d[k] for d in samples], axis=0) for k in samples[0]}
+    # for general dataset use only
+    if isinstance(data_[0],tuple):
+        # data_ is a list of tuple (ref_idx, sample)
+        ref_idxs = data_[0][0] # assume that there is the batch size is always 1
+        samples = [sample for _, sample in data_]
+        return ref_idxs, {k: np.stack([d[k] for d in samples], axis=0) for k in samples[0]}
+    else:
+        return {k: np.stack([d[k] for d in data_], axis=0) for k in data_[0]}
