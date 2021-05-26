@@ -69,4 +69,4 @@ def dict_collate(data_):
     # data_ is a list of tuple (ref_idx, sample)
     ref_idxs = [ref_idx for ref_idx, _ in data_]
     samples = [sample for _, sample in data_]
-    return zip(ref_idxs,{k: np.stack([d[k] for d in samples], axis=0) for k in samples[0]})
+    return ref_idxs, {k: np.stack([d[k] for d in samples], axis=0) for k in samples[0]}
