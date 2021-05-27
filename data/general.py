@@ -11,11 +11,12 @@ from data.data_utils import dict_collate
 
 class MyDataset(data.Dataset):
 
-    def __init__(self, root, num_src, read, transforms):
+    def __init__(self, root, num_src, read, transforms, img_ext):
         self.root = root
         self.num_src = num_src
         self.read = read
         self.transforms = transforms
+        self.img_ext = img_ext
         self.pair, self.ref_idxs = load_pair(os.path.join(self.root, f'pair.txt'))
 
     def __len__(self):
@@ -25,7 +26,7 @@ class MyDataset(data.Dataset):
         ref_idx = self.ref_idxs[i]
         src_idxs = self.pair[i][:self.num_src]
 
-        ref, *srcs = [os.path.join(self.root, f'images/{idx:08}.jpg') for idx in [ref_idx] + src_idxs]
+        ref, *srcs = [os.path.join(self.root, f'images/{idx:08}.{self.img_ext}') for idx in [ref_idx] + src_idxs]
         ref_cam, *srcs_cam = [os.path.join(self.root, f'cams/{idx:08}_cam.txt') for idx in [ref_idx] + src_idxs]
         skip = 0
 
@@ -74,11 +75,12 @@ def val_preproc(sample, preproc_args):
     }
 
 
-def get_val_loader(root, num_src, preproc_args):
+def get_val_loader(root, num_src, img_ext, preproc_args):
     dataset = MyDataset(
         root, num_src,
         read=lambda filenames: read(filenames, preproc_args['max_d'], preproc_args['interval_scale']),
-        transforms=[lambda sample: val_preproc(sample, preproc_args)]
+        transforms=[lambda sample: val_preproc(sample, preproc_args)],
+        img_ext = img_ext
     )
     loader = data.DataLoader(dataset, 1, collate_fn=dict_collate, shuffle=False)
     return dataset, loader

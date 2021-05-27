@@ -47,6 +47,8 @@ parser.add_argument('--show_result', action='store_true', default=False, help='S
 parser.add_argument('--write_result', action='store_true', default=False, help='Set to save the results.')
 parser.add_argument('--result_dir', type=str, help='The dir to save the results.')
 
+parser.add_argument('--img_ext', type=str, help='The ext for the image to be saved and read')
+
 args = parser.parse_args()
 
 if __name__ == '__main__':
@@ -61,7 +63,7 @@ if __name__ == '__main__':
     get_val_loader = importlib.import_module(f'data.{args.dataset_name}').get_val_loader
 
     dataset, loader = get_val_loader(
-        args.data_root, args.num_src,
+        args.data_root, args.num_src, args.img_ext,
         {
             'interval_scale': args.interval_scale,
             'max_d': args.max_d,
@@ -125,7 +127,7 @@ if __name__ == '__main__':
                 ref_cam_o = scale_camera(ref_cam_o, .5)
                 est_depth_o = est_depth[0, 0]
                 prob_maps_o = [prob_map[0, 0] for prob_map in prob_maps]
-                cv2.imwrite(os.path.join(args.result_dir, f'{i:08}.jpg'), ref_o)
+                cv2.imwrite(os.path.join(args.result_dir, f'{i:08}.{args.img_ext}'), ref_o)
                 write_cam(os.path.join(args.result_dir, f'cam_{i:08}_flow3.txt'), ref_cam_o)
                 write_pfm(os.path.join(args.result_dir, f'{i:08}_flow3.pfm'), est_depth_o)
                 for stage_i, prob_map_o in enumerate(prob_maps_o):
