@@ -22,6 +22,7 @@ parser.add_argument('--vthresh', type=int, default=4)
 parser.add_argument('--pthresh', type=str, default='.8,.7,.8')
 parser.add_argument('--cam_scale', type=float, default=1)
 parser.add_argument('--show_result', action='store_true', default=False)
+parser.add_argument('--img_ext', type=str)
 
 args = parser.parse_args()
 
@@ -114,7 +115,7 @@ def ave_fusion(ref_depth, reproj_xyd, masks):
 
 if __name__ == '__main__':
     
-    dataset, loader = get_val_loader(args.data, args.pair, args.view, {})
+    dataset, loader = get_val_loader(args.data, args.pair, args.view, args.img_ext, {})
     pthresh = [float(v) for v in args.pthresh.split(',')]
 
     views = {}

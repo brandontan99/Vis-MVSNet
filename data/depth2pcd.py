@@ -33,11 +33,12 @@ def load_pair(file: str, min_views: int=None):
 
 class Depth2pcd(data.Dataset):
 
-    def __init__(self, root, pair, num_src, read, transforms):
+    def __init__(self, root, pair, num_src, read, transforms, img_ext):
         self.root = root
         self.num_src = num_src
         self.read = read
         self.transforms = transforms
+        self.img_ext = img_ext
         self.pair = load_pair(pair, min_views=num_src)
 
     def __len__(self):
@@ -47,7 +48,7 @@ class Depth2pcd(data.Dataset):
         ref_idx = self.pair['id_list'][i]
         src_idxs = self.pair[ref_idx]['pair'][:self.num_src]
 
-        ref, *srcs = [os.path.join(self.root, f'{idx.zfill(8)}.jpg') for idx in [ref_idx] + src_idxs]
+        ref, *srcs = [os.path.join(self.root, f'{idx.zfill(8)}.{self.img_ext}') for idx in [ref_idx] + src_idxs]
         ref_cam, *srcs_cam = [os.path.join(self.root, f'cam_{idx.zfill(8)}_flow3.txt') for idx in [ref_idx] + src_idxs]
         ref_depth, *srcs_depth = [os.path.join(self.root, f'{idx.zfill(8)}_flow3.pfm') for idx in [ref_idx] + src_idxs]
         ref_probs = [os.path.join(self.root, f'{ref_idx.zfill(8)}_flow{k+1}_prob.pfm') for k in range(3)]
@@ -110,11 +111,12 @@ def val_preproc(sample, preproc_args):
     }
 
 
-def get_val_loader(root, pair, num_src, preproc_args):
+def get_val_loader(root, pair, num_src, img_ext, preproc_args):
     dataset = Depth2pcd(
         root, pair, num_src,
         read=lambda filenames: read(filenames),
-        transforms=[lambda sample: val_preproc(sample, preproc_args)]
+        transforms=[lambda sample: val_preproc(sample, preproc_args)],
+        img_ext=img_ext
     )
     loader = data.DataLoader(dataset, batch_size=4, num_workers=8, collate_fn=dict_collate, shuffle=False, drop_last=False)
     return dataset, loader
