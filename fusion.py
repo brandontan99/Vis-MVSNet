@@ -34,6 +34,11 @@ def load_pair(file: str, min_views: int=None):
     pairs['id_list'] = img_ids
     return pairs
 
+def filter_pair(pairs):
+    img_ids = pairs['id_list']
+    for img_id in img_ids:
+        pairs[img_id]['pair'] = [pair_id for pair_id in pairs[img_id]['pair'] if pair_id in img_ids]
+    return pairs
 
 def idx_img2cam(idx_img_homo, depth, cam):  # nhw31, n1hw -> nhw41
     idx_cam = cam[:,1:2,:3,:3].unsqueeze(1).inverse() @ idx_img_homo  # nhw31
@@ -146,6 +151,7 @@ if __name__ == '__main__':
     pthresh = [float(v) for v in args.pthresh.split(',')]
     num_src = args.view
     pair = load_pair(args.pair, min_views=num_src)
+    pair = filter_pair(pair)
     n_views = len(pair['id_list'])
 
     views = {}
